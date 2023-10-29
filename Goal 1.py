@@ -6,6 +6,8 @@ from geometry_msgs.msg import Twist, Point
 from turtlesim.msg import Pose
 import random
 import math
+import time
+import csv
 
 class TurtleController(Node):
     def __init__(self):
@@ -19,10 +21,15 @@ class TurtleController(Node):
         self.prev_error = 0.0
         self.integral = 0.0
         self.goal_reached = True
-        self.environment_x_max = 11.0  # maximum X coordinate for the environment
-        self.environment_y_max = 11.0  # maximum Y coordinate for the environment
+        self.environment_x_max = 11.0
+        self.environment_y_max = 11.0
+
+        self.csv_file = open('/home/ashwin/ros2_ws/turtle_data.csv', mode='w', newline='')
+        self.csv_writer = csv.writer(self.csv_file)
+        self.csv_writer.writerow(['Time', 'Linear Velocity', 'Angular Velocity', 'X', 'Y', 'Error', 'Integral of Error'])
 
     def pose_callback(self, msg):
+        time_now = time.time()
         self.get_logger().info(f'Turtle Pose: x={msg.x}, y={msg.y}, theta={msg.theta}')
 
         if self.goal_reached:
@@ -38,7 +45,6 @@ class TurtleController(Node):
         angle_to_goal = math.atan2(self.goal.y - msg.y, self.goal.x - msg.x)
         angular_vel = 4 * (angle_to_goal - msg.theta)
         
-        
         cmd_vel = Twist()
         cmd_vel.linear.x = linear_vel
         cmd_vel.angular.z = angular_vel
@@ -47,11 +53,16 @@ class TurtleController(Node):
         self.integral += error
         self.prev_error = error
 
+        self.get_logger().info(f'Time: {time_now}')
+        self.get_logger().info(f'Control Inputs - Linear Velocity: {linear_vel}, Angular Velocity: {angular_vel}')
+        self.get_logger().info(f'Turtle Pose - X: {msg.x}, Y: {msg.y}')
+        self.get_logger().info(f'Error: {error}, Integral of Error: {self.integral}')
+
+        self.csv_writer.writerow([time_now, linear_vel, angular_vel, msg.x, msg.y, error, self.integral])
+
     def set_random_goal(self):
-       
         self.goal.x = random.uniform(1.0, self.environment_x_max)
         self.goal.y = random.uniform(1.0, self.environment_y_max)
-        
         self.get_logger().info(f'Random Goal: x={self.goal.x}, y={self.goal.y}')
 
 def main(args=None):
