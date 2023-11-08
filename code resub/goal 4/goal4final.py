@@ -22,7 +22,7 @@ class TurtleCircleChase(Node):
         self.kp_linear = 2.0
         self.ki_linear = 0.0
         self.kd_linear = 0.0
-        self.distance_threshold = 0.8
+        self.distance_threshold = 0.6
 
         self.kp_angular = 2.0
         self.ki_angular = 0.0
@@ -40,9 +40,9 @@ class TurtleCircleChase(Node):
         self.max_acceleration = 2.0
         self.max_deceleration = 2.0
 
-        self.max_linear_velocity = 5.0
+        self.max_linear_velocity = 10.0
         self.min_linear_velocity = -2.0
-        self.max_angular_velocity = 5.0
+        self.max_angular_velocity = 8.0
         self.min_angular_velocity = -2.0
 
         self.current_linear_velocity = 0.0
@@ -64,7 +64,7 @@ class TurtleCircleChase(Node):
             angle += 2 * math.pi
 
         error_linear = 4.5*distance
-        error_angular = 6*angle
+        error_angular = 5.5*angle
         self.integrated_error_linear += error_linear
         self.integrated_error_angular += error_angular
 
@@ -98,6 +98,7 @@ class TurtleCircleChase(Node):
         cmd_vel.angular.z = control_angular
 
         if distance <= self.distance_threshold:
+            self.get_logger().info('Got em!')
             self.kill_turtle()
             cmd_vel.linear.x = 0.0
             cmd_vel.angular.z = 0.0
@@ -111,7 +112,7 @@ class TurtleCircleChase(Node):
         request.name = 'robber_turtle'
         future = self.kill_turtle_service.call_async(request)
         rclpy.spin_until_future_complete(self, future)
-        self.get_logger().info('Got em!')
+       
         if future.result() is not None:
             self.get_logger().info('Killed the turtle')
         else:
@@ -120,8 +121,8 @@ class TurtleCircleChase(Node):
     def spawn_turtle(self):
         self.spawn_turtle_service = self.create_client(Spawn, 'spawn')
         request = Spawn.Request()
-        request.x = random.uniform(0.0, 11.0)
-        request.y = random.uniform(0.0, 11.0)
+        request.x = 0.0
+        request.y = 0.0
         request.theta = random.uniform(0.0, 2*math.pi)
         request.name = 'police_turtle'
         future = self.spawn_turtle_service.call_async(request)
