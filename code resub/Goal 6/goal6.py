@@ -16,7 +16,7 @@ class TurtleCircleChaseNoisy(Node):
         self.pose_subscriber = self.create_subscription(
             Pose, 'police_turtle/pose', self.police_turtle, 10)
         self.subscriber_rp = self.create_subscription(
-            PoseMsg, '/rt_noisy_pose', self.robberturtle_pose, 10)
+            Pose, '/rt_noisy_pose', self.robberturtle_pose, 10)
 
         self.kp_linear = 2.0
         self.ki_linear = 0.0
