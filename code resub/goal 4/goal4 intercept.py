@@ -19,7 +19,7 @@ class TurtleCircleChase(Node):
         self.pose_subscriber_robber = self.create_subscription(
             Pose, 'robber_turtle/pose', self.turtle_capture_control, 10)
         self.subscriber_rp = self.create_subscription(
-            Pose, '/rt_real_pose', self.robberturtle_pose, 1)  # Changed QoS profile
+            Pose, '/rt_real_pose', self.robberturtle_pose, 1) 
 
         self.kp_linear = 2.0
         self.ki_linear = 0.0
