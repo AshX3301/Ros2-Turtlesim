@@ -19,12 +19,12 @@ class TurtleCircleChase(Node):
         self.pose_subscriber_robber = self.create_subscription(
             Pose, 'robber_turtle/pose', self.turtle_capture_control, 10)
         self.subscriber_rp = self.create_subscription(
-            Pose, '/rt_real_pose', self.robberturtle_pose, 1) 
+            Pose, '/rt_real_pose', self.robberturtle_pose, 10)
 
         self.kp_linear = 2.0
         self.ki_linear = 0.0
         self.kd_linear = 0.0
-        self.distance_threshold = 0.1
+        self.distance_threshold = 0.3
 
         self.kp_angular = 2.0
         self.ki_angular = 0.0
@@ -35,7 +35,6 @@ class TurtleCircleChase(Node):
         self.target_theta = 0.0
         self.linear_velocity = 0.0
         self.angular_velocity = 0.0
-
 
         self.police_x = 0.0
         self.police_y = 0.0
@@ -49,22 +48,23 @@ class TurtleCircleChase(Node):
         self.max_acceleration = 2.0
         self.max_deceleration = 2.0
 
-        self.max_linear_velocity = 2.5
+        self.max_linear_velocity = 7.0
         self.min_linear_velocity = -2.0
         self.max_angular_velocity = 5.0
         self.min_angular_velocity = -2.0
 
         self.current_linear_velocity = 0.0
-        self.intercept_time = 10.0
-        
+        self.intercept_time = 5.0
 
     def predict_future_pose(self):
         radius = self.linear_velocity / (2*math.pi)
         angular_displacement = self.angular_velocity * self.intercept_time
-        predicted_x = self.target_x + radius * math.cos(self.target_theta + angular_displacement)
-        predicted_y = self.target_y + radius * math.sin(self.target_theta + angular_displacement)
+        predicted_x = self.target_x + radius * \
+            math.cos(self.target_theta + angular_displacement)
+        predicted_y = self.target_y + radius * \
+            math.sin(self.target_theta + angular_displacement)
         predicted_theta = self.target_theta + angular_displacement
-        #self.target_x, self.target_y, self.target_theta = predicted_x, predicted_y, predicted_theta
+        # self.target_x, self.target_y, self.target_theta = predicted_x, predicted_y, predicted_theta
         return predicted_x, predicted_y, predicted_theta
 
     def robberturtle_pose(self, msg):
@@ -83,7 +83,7 @@ class TurtleCircleChase(Node):
         self.target_x, self.target_y, self.target_theta = predicted_x, predicted_y, predicted_theta
         distance = math.sqrt((self.target_x - msg.x) **
                              2 + (self.target_y - msg.y) ** 2)
-        #self.get_logger().info(f'distance to intercept :{distance}')
+        # self.get_logger().info(f'distance to intercept :{distance}')
 
         angle = math.atan2(self.target_y - msg.y,
                            self.target_x - msg.x) - msg.theta
@@ -130,11 +130,10 @@ class TurtleCircleChase(Node):
             self.cmd_vel.angular.z = 0.0
             self.current_linear_velocity = 0.0
         self.publisher.publish(self.cmd_vel)
-        
 
     def turtle_capture_control(self, msg):
         distancex = math.sqrt((msg.x - self.police_x) **
-                             2 + (msg.y - self.police_y) ** 2)
+                              2 + (msg.y - self.police_y) ** 2)
         self.get_logger().info(f'distance :{distancex}')
         if distancex <= self.distance_threshold:
             self.kill_turtle()
@@ -173,7 +172,7 @@ class TurtleCircleChase(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = TurtleCircleChase()
-    #time.sleep(10.0)
+    time.sleep(9.0)
     node.spawn_turtle()  # Spawn turtle
     rclpy.spin(node)
     rclpy.shutdown()
