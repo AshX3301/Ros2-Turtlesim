@@ -65,7 +65,6 @@ class TurtleCircleChaseNoisy(Node):
         self.kalman_filter = KalmanFilter()
 
     def predict_future_pose(self):
-        self.kalman_filter.predict_state()
         real_pose = self.kalman_filter.get_estimated_state()
         print(real_pose[0])
         radius = self.linear_velocity / (2 * math.pi)
@@ -75,6 +74,7 @@ class TurtleCircleChaseNoisy(Node):
         self.predicted_y = real_pose[1] + radius * \
             math.sin(real_pose[2] + angular_displacement)
         self.predicted_theta = real_pose[2] + angular_displacement
+        self.get_logger().info(f'({real_pose[0]},{real_pose[1]},{real_pose[2]})')
         return self.predicted_x, self.predicted_y, self.predicted_theta
 
     def robberturtle_pose(self, msg):
@@ -85,13 +85,13 @@ class TurtleCircleChaseNoisy(Node):
         self.angular_velocity = msg.angular_velocity
         self.kalman_filter.update_state(
             np.array([[self.target_x], [self.target_y], [self.target_theta]]))
+        
         self.predict_future_pose()
 
     def police_turtle(self, msg):
         self.police_x = msg.x
         self.police_y = msg.y
         self.police_theta = msg.theta
-        self.get_logger().info(f'({self.predicted_x},{self.predicted_y},{self.predicted_theta})')
         distance = math.sqrt((self.predicted_x - msg.x) **
                              2 + (self.predicted_y - msg.y) ** 2)
 
@@ -103,7 +103,7 @@ class TurtleCircleChaseNoisy(Node):
             angle += 2 * math.pi
 
         error_linear = distance
-        error_angular = 2.0 * angle
+        error_angular = angle
         self.integrated_error_linear += error_linear
         self.integrated_error_angular += error_angular
 
@@ -154,7 +154,7 @@ class TurtleCircleChaseNoisy(Node):
                               2 + (msg.y - self.police_y) ** 2)
         #self.get_logger().info(f'distance :{distancex}')
         if distancex <= self.distance_threshold:
-            self.kill_turtle()
+            #self.kill_turtle()
             self.cmd_vel.linear.x = 0.0
             self.cmd_vel.angular.z = 0.0
             self.current_linear_velocity = 0.0
@@ -174,7 +174,7 @@ class TurtleCircleChaseNoisy(Node):
     def spawn_turtle(self):
         self.spawn_turtle_service = self.create_client(Spawn, 'spawn')
         request = Spawn.Request()
-        request.x = 11.0
+        request.x = 0.0
         request.y = 0.0
         request.theta = random.uniform(0.0, 2*math.pi)
         request.name = 'police_turtle'
@@ -206,6 +206,7 @@ class KalmanFilter:
             np.dot(np.dot(self.H, self.P), self.H.T) + self.R))
         self.x = self.x + np.dot(K, (z - np.dot(self.H, self.x)))
         self.P = np.dot((np.eye(3) - np.dot(K, self.H)), self.P)
+        self.predict_state()
         
 
     def get_estimated_state(self):
@@ -215,7 +216,7 @@ class KalmanFilter:
 def main(args=None):
     rclpy.init(args=args)
     node = TurtleCircleChaseNoisy()
-    time.sleep(9.5)
+    #time.sleep(10.0)
     node.spawn_turtle()
     rclpy.spin(node)
     rclpy.shutdown()
