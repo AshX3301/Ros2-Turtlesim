@@ -19,7 +19,7 @@ class TurtleCircleChase(Node):
         self.pose_subscriber_robber = self.create_subscription(
             Pose, 'robber_turtle/pose', self.turtle_capture_control, 10)
         self.subscriber_rp = self.create_subscription(
-            Pose, '/rt_real_pose', self.robberturtle_pose, 10)  # Changed QoS profile
+            Pose, '/rt_real_pose', self.robberturtle_pose, 10)
 
         self.kp_linear = 2.0
         self.ki_linear = 0.0
@@ -56,13 +56,16 @@ class TurtleCircleChase(Node):
         self.current_linear_velocity = 0.0
         self.intercept_time = 10.0
 
-        self.robber_passed_point = False  # Flag to check if robber turtle passed through the predicted point
+        # Flag to check if robber turtle passed through the predicted point
+        self.robber_passed_point = False
 
     def predict_future_pose(self):
         radius = self.linear_velocity / (2 * math.pi)
         angular_displacement = self.angular_velocity * self.intercept_time
-        self.target_x += radius * math.cos(self.target_theta + angular_displacement)
-        self.target_y += radius * math.sin(self.target_theta + angular_displacement)
+        self.target_x += radius * \
+            math.cos(self.target_theta + angular_displacement)
+        self.target_y += radius * \
+            math.sin(self.target_theta + angular_displacement)
         self.target_theta += angular_displacement
         return self.target_x, self.target_y, self.target_theta
 
@@ -78,7 +81,8 @@ class TurtleCircleChase(Node):
         self.police_x = msg.x
         self.police_y = msg.y
         self.police_theta = msg.theta
-        distance = math.sqrt((self.target_x - msg.x) ** 2 + (self.target_y - msg.y) ** 2)
+        distance = math.sqrt((self.target_x - msg.x) **
+                             2 + (self.target_y - msg.y) ** 2)
 
         angle = math.atan2(self.target_y - msg.y,
                            self.target_x - msg.x) - msg.theta
@@ -136,7 +140,7 @@ class TurtleCircleChase(Node):
 
     def turtle_capture_control(self, msg):
         distancex = math.sqrt((msg.x - self.police_x) **
-                             2 + (msg.y - self.police_y) ** 2)
+                              2 + (msg.y - self.police_y) ** 2)
         self.get_logger().info(f'distance :{distancex}')
         if distancex <= self.distance_threshold:
             self.kill_turtle()
