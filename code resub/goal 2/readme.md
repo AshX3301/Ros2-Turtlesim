@@ -8,3 +8,7 @@ stop. Since the turtlesim does not provide this deceleration profile, let us add
 - Do you need to change gains every time? If yes/no, why?
 - Accompany your videos with plots that show how you are maintaining the limitations on acceleration and deceleration
   ![Screenshot 2023-11-02 at 20-11-40 Robotics Engineer Assignment - Robotics Engineer Assignment-1 pdf](https://github.com/AshX3301/Ros2-Turtlesim/assets/70807797/743a5487-bf77-45cf-a887-f1052bada31e)
+
+## Goal 2: Solution
+- Code: [Goal2 final.py](https://github.com/AshX3301/Ros2-Turtlesim/blob/main/code%20resub/goal%202/goal2%20final.py)
+- Video: https://drive.google.com/file/d/1D8Rwd34xeOxKnrymM-4O_CICcAsL7zM7/view?usp=drive_link
