@@ -15,3 +15,5 @@
 ## Results
 - Video: https://drive.google.com/file/d/1doQiBu-EWyol1_vHc49d1Ijjzt9kNQ65/view?usp=drive_link
 - Video: https://drive.google.com/file/d/1wWGX2aiLPTF3bLC6jsY8JUT6OyI7QsJ-/view?usp=drive_link
+- Intercept pattern
+![intercept points](https://github.com/AshX3301/Ros2-Turtlesim/assets/70807797/afddbcde-cc4b-4e52-ab92-9f83dd23f099)
