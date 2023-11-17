@@ -5,7 +5,7 @@
 - Show performance variation for various gain values. Figure out the variables/parameters to plot e.g. control inputs, current state etc. to explain why it work
 
 ## Goal 1 Solution
-- Code :goal1 final.py
+- Code : [goal1_final.py](./goal/goal1_final.py)
 - Video : https://drive.google.com/file/d/1xhYyUgirCdU7MXi1KhWGSdSSTQcBWgJa/view?usp=drive_link
 
 ## Result
